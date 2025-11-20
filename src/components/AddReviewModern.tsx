@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 interface AddReviewModernProps {
   businessName: string;
   onReviewAdded: () => void;
+  isInModal?: boolean;
 }
 
 const EMOJI_REACTIONS = [
@@ -41,7 +42,7 @@ const MOTIVATIONAL_MESSAGES = [
   "Your voice matters on the blockchain! 💪"
 ];
 
-export const AddReviewModern: React.FC<AddReviewModernProps> = ({ businessName, onReviewAdded }) => {
+export const AddReviewModern: React.FC<AddReviewModernProps> = ({ businessName, onReviewAdded, isInModal = false }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);

@@ -182,8 +182,9 @@ export const BusinessExplorer: React.FC<BusinessExplorerProps> = ({
                 <BusinessCard
                   key={business.id}
                   business={business}
-                  isSelected={selectedBusiness?.id === business.id}
-                  onClick={() => onBusinessSelect(business)}
+                  onSelect={() => onBusinessSelect(business)}
+                  onWriteReview={() => {}}
+                  index={0}
                   reviewCount={stats?.reviews}
                   averageRating={stats?.rating}
                 />

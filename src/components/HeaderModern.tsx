@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useWallet } from '../hooks/useWallet';
+import { useUsernames } from '../hooks/useUsernames';
+import { UsernameModal } from './UsernameModal';
 import { 
   Wallet, LogOut, Shield, User, Briefcase, ShieldAlert, 
-  Sparkles, Star, Globe, Zap, Menu, X
+  Sparkles, Star, Globe, Zap, Menu, X, AtSign, Edit2
 } from 'lucide-react';
 
 export const HeaderModern: React.FC = () => {
   const { account, userRole, connectWallet, disconnectWallet, isConnecting } = useWallet();
+  const { currentUsername, getUserDisplay } = useUsernames();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,6 +96,29 @@ export const HeaderModern: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4">
             {account ? (
               <>
+                {/* Username Display */}
+                <motion.button
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => setShowUsernameModal(true)}
+                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl transition-colors ${
+                    scrolled 
+                      ? 'bg-purple-100 hover:bg-purple-200 text-purple-700' 
+                      : 'bg-white/20 hover:bg-white/30 text-white'
+                  }`}
+                >
+                  <AtSign className="w-4 h-4" />
+                  <span className="font-medium">
+                    {currentUsername || 'Set Username'}
+                  </span>
+                  {currentUsername ? (
+                    <Edit2 className="w-3 h-3 opacity-50" />
+                  ) : (
+                    <Sparkles className="w-3 h-3" />
+                  )}
+                </motion.button>
+
                 {/* Role Badge */}
                 <motion.div 
                   initial={{ scale: 0 }}
@@ -230,6 +257,12 @@ export const HeaderModern: React.FC = () => {
       {!scrolled && (
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       )}
+
+      {/* Username Modal */}
+      <UsernameModal 
+        isOpen={showUsernameModal}
+        onClose={() => setShowUsernameModal(false)}
+      />
     </motion.header>
   );
 };

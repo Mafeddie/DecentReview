@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useContract } from '../hooks/useContract';
 import { useWallet } from '../hooks/useWallet';
+import { useUsernames } from '../hooks/useUsernames';
 import { 
   Trophy, Medal, Award, Crown, Star, TrendingUp, 
   Clock, Calendar, Flame, Zap, Target, Gift,
-  User, ChevronUp, ChevronDown, Timer
+  User, ChevronUp, ChevronDown, Timer, Edit2
 } from 'lucide-react';
 import { KENYAN_BUSINESSES } from '../data/kenyanBusinesses';
+import { UsernameModal } from './UsernameModal';
 
 interface ReviewerStats {
   address: string;
@@ -67,8 +69,10 @@ export const Leaderboard: React.FC = () => {
   const [leaderboardData, setLeaderboardData] = useState<ReviewerStats[]>([]);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
   const { account } = useWallet();
   const { getReviews } = useContract();
+  const { getUserDisplay, currentUsername } = useUsernames();
 
   useEffect(() => {
     fetchLeaderboardData();
@@ -253,11 +257,29 @@ export const Leaderboard: React.FC = () => {
                           <User className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="font-semibold text-lg">
-                            {reviewer.address}
-                            {isCurrentUser && <span className="ml-2 text-yellow-400">(You)</span>}
-                          </p>
+                          <div className="flex items-center">
+                            <p className="font-semibold text-lg">
+                              @{getUserDisplay(reviewer.address)}
+                            </p>
+                            {isCurrentUser && (
+                              <>
+                                <span className="ml-2 text-yellow-400">(You)</span>
+                                {!currentUsername && (
+                                  <motion.button
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => setShowUsernameModal(true)}
+                                    className="ml-2 p-1 hover:bg-white/20 rounded-lg transition-colors"
+                                    title="Set username"
+                                  >
+                                    <Edit2 className="w-3 h-3" />
+                                  </motion.button>
+                                )}
+                              </>
+                            )}
+                          </div>
                           <div className="flex items-center space-x-3 text-sm text-white/70">
+                            <span className="text-xs text-white/50">{reviewer.address}</span>
                             <span className="flex items-center">
                               <Star className="w-3 h-3 mr-1" />
                               {reviewer.reviewCount} reviews
@@ -370,6 +392,12 @@ export const Leaderboard: React.FC = () => {
           <div>🏷️ Add tags: +25 pts</div>
         </div>
       </motion.div>
+
+      {/* Username Modal */}
+      <UsernameModal 
+        isOpen={showUsernameModal}
+        onClose={() => setShowUsernameModal(false)}
+      />
     </motion.div>
   );
 };
